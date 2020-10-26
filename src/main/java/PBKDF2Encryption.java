@@ -12,7 +12,10 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
+import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.lang.System.out;
+
 
 public class PBKDF2Encryption {
 
@@ -23,6 +26,26 @@ public class PBKDF2Encryption {
     private static final int IV_SIZE       = 16; // fixed AES Block Size
 
     private static final int DERIVATION_ITERATIONS  = 1000;
+
+    public static void main(String[] args) {
+        if (args.length != 1) {
+            out.println("usage: parameter 'text to encrypt' missing.");
+            System.exit(42);
+        }
+
+        String plainText = args[0];
+
+        out.printf("Encrypting: '%s'%n", plainText);
+
+        String encoded = encryptAndEncode(plainText);
+
+        out.printf("Encoded   : '%s' ...%n", encoded);
+        out.printf("Decrypting: '%s' ...%n", encoded);
+
+        String decoded = decodeAndDecrypt(encoded);
+
+        out.printf("Decoded   : '%s'%n", decoded);
+   }
 
     /**
      * <- plain text
@@ -153,11 +176,11 @@ public class PBKDF2Encryption {
 
         @Override
         public String toString() {
-            return String.format("salt=%s, iv=%s, text=%s", toHex(salt), toHex(iv), toHex(encryptedText));
+            return format("salt=%s, iv=%s, text=%s", toHex(salt), toHex(iv), toHex(encryptedText));
         }
 
         private static String toHex(byte[] array) {
-            return String.format("%032X", new BigInteger(1, array));
+            return format("%032X", new BigInteger(1, array));
         }
     }
 
